@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --blue: #1a8cff;
+  --blue-strong: #0e7ff0;
+  --blue-soft: #eaf3ff;
+  --blue-line: #bcdcff;
+  --ink: #26282b;
+  --ink-soft: #5f6368;
+  --ink-faint: #9aa0a6;
+  --line: #ededf0;
+  --line-2: #e2e4e8;
+  --paper: #f7f8f9;
+  --ph: #f0f1f3;
+  --ph-line: #d7dade;
+  --red: #f75c5c;
+  --new: #ff7a45;
+  --background: #f7f8f9;
+  --foreground: #26282b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.logo-mark {
+  position: relative;
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 8px 8px 8px 2px;
+  background: var(--blue);
+}
+
+.logo-mark::after {
+  content: "";
+  position: absolute;
+  inset: 7px 7px 9px;
+  border-radius: 2px;
+  background: #fff;
+  clip-path: polygon(50% 0, 100% 45%, 100% 100%, 0 100%, 0 45%);
+}
+
+@keyframes flash {
+  0% {
+    box-shadow: 0 0 0 3px var(--blue);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.flash-target {
+  animation: flash 1.1s ease;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
