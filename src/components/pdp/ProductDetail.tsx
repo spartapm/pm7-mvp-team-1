@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { getSubCategory } from "@/lib/categories";
 import { Header } from "@/components/Header";
@@ -32,14 +31,6 @@ export function ProductDetail({ product }: { product: Product }) {
     <div className="min-h-screen bg-[var(--paper)]">
       <div className="mx-auto min-h-screen max-w-[1256px] bg-white shadow-[0_0_0_1px_var(--line)]">
         <Header />
-        <div className="border-b border-[var(--line)] px-7 py-2.5">
-          <Link
-            href={`/store/category?sub=${product.subCategory}`}
-            className="inline-flex rounded-lg border border-[var(--line-2)] bg-white px-3.5 py-1.5 text-[12.5px] text-[var(--ink-soft)]"
-          >
-            ← 카테고리로
-          </Link>
-        </div>
         <p className="px-7 pb-1 pt-4 text-[12.5px] text-[var(--ink-faint)]">
           가구 › {cat?.major.label ?? product.majorCategory} › {cat?.sub.label}
         </p>

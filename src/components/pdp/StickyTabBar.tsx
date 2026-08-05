@@ -60,9 +60,15 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
       onScrollFail();
       return;
     }
-    const offset = TAB_HEIGHT + (withHover || hoverOpen ? HOVER_HEIGHT : 0) + SCROLL_GAP;
-    const y = el.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top: y, behavior: "auto" });
+    // PDP-TAB-003: 섹션 상단이 호버 메뉴 바로 아래에 오도록
+    // offset = -(탭바 + 호버메뉴 + 여백) → 목표좌표 = 섹션Y + offset
+    const offset = -(
+      TAB_HEIGHT +
+      (withHover || hoverOpen ? HOVER_HEIGHT : 0) +
+      SCROLL_GAP
+    );
+    const y = el.getBoundingClientRect().top + window.scrollY + offset;
+    window.scrollTo({ top: Math.max(0, y), behavior: "auto" });
     el.classList.remove("flash-target");
     void el.offsetWidth;
     el.classList.add("flash-target");
@@ -87,13 +93,14 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
       onScrollFail();
       return;
     }
-    const offset = TAB_HEIGHT + HOVER_HEIGHT + SCROLL_GAP;
+    // 메뉴 항목 스크롤도 동일: 목표좌표 = (이미지Y + height*yRatio) + offset
+    const offset = -(TAB_HEIGHT + HOVER_HEIGHT + SCROLL_GAP);
     const y =
       img.getBoundingClientRect().top +
       window.scrollY +
-      img.offsetHeight * yRatio -
+      img.offsetHeight * yRatio +
       offset;
-    window.scrollTo({ top: y, behavior: "auto" });
+    window.scrollTo({ top: Math.max(0, y), behavior: "auto" });
     img.classList.remove("flash-target");
     void img.offsetWidth;
     img.classList.add("flash-target");
@@ -134,7 +141,7 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
   ];
 
   return (
-    <div className="sticky top-0 z-[600] bg-white shadow-[0_1px_0_var(--line)]">
+    <div className="sticky top-0 z-[600] overflow-visible bg-white shadow-[0_1px_0_var(--line)]">
       <div className="relative mx-auto flex h-[52px] max-w-[1256px] items-stretch px-7">
         {tabs.map((tab) => {
           const isDetail = tab.id === "detail";
@@ -212,9 +219,9 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
               NEW
             </span>
             {tooltipOpen ? (
-              <div className="absolute left-0 top-[calc(100%+8px)] z-[630] w-[280px] rounded-lg border border-[var(--blue-line)] bg-white p-3 text-[11.5px] font-normal leading-relaxed text-[var(--ink-soft)] shadow-lg">
-                상세페이지 이미지를 AI가 분석해 각 정보의 위치를 찾아 연결했습니다. 항목을 누르면 해당
-                위치로 이동합니다. 위치가 정확하지 않을 수 있습니다.
+              <div className="absolute left-0 top-[calc(100%+8px)] z-[630] w-[360px] whitespace-normal break-keep rounded-lg border border-[var(--blue-line)] bg-white px-3.5 py-3 text-[12px] font-normal leading-[1.65] text-[var(--ink-soft)] shadow-[0_8px_24px_rgba(0,0,0,.12)]">
+                상세페이지 이미지를 AI가 분석해 각 정보의 위치를 찾아 연결했습니다. 항목을 누르면
+                해당 위치로 이동합니다. 위치가 정확하지 않을 수 있습니다.
               </div>
             ) : null}
           </div>

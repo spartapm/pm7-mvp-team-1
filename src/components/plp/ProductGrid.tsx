@@ -57,9 +57,6 @@ export function ProductGrid({
           ) : null}
         </div>
       </div>
-      <p className="mb-4 text-[12.5px] text-[var(--ink-faint)]">
-        상품 {sorted.length}개 · MVP 고정 목록
-      </p>
       <div className="grid grid-cols-2 gap-[18px] md:grid-cols-3 lg:grid-cols-4">
         {sorted.map((product) => (
           <ProductCard key={product.id} product={product} />
