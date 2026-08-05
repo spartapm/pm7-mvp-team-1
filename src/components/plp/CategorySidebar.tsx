@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORIES, SIDEBAR_DISABLED } from "@/lib/categories";
+import { CATEGORIES, SIDEBAR_DISABLED, categoryHref } from "@/lib/categories";
 import { DISABLED_CATEGORY_SLUG } from "@/lib/stubs";
 import type { SubCategoryId } from "@/lib/types";
 
@@ -36,7 +36,7 @@ export function CategorySidebar({ activeSub }: { activeSub: SubCategoryId }) {
                   return (
                     <li key={sub.id}>
                       <Link
-                        href={`/store/category?sub=${sub.id}`}
+                        href={categoryHref(sub.id)}
                         className={`block rounded-md py-2 pl-4 text-[13.5px] hover:bg-[var(--paper)] ${
                           on
                             ? "font-extrabold text-[var(--blue)]"

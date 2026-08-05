@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { categoryHref } from "@/lib/categories";
 
 const GNB = [
   { label: "쇼핑홈", href: "/proto/home" },
-  { label: "카테고리", href: "/store/category?sub=%EC%B9%A8%EB%8C%80%ED%94%84%EB%A0%88%EC%9E%84" },
+  { label: "카테고리", href: categoryHref("침대프레임") },
   { label: "베스트", href: "/proto/best" },
   { label: "오늘의딜", href: "/proto/deal" },
   { label: "단독상품", href: "/proto/exclusive" },
@@ -17,7 +18,7 @@ export function Header({ activeNav = "카테고리" }: { activeNav?: string }) {
     <header className="border-b border-[var(--line)] bg-white">
       <div className="mx-auto flex max-w-[1256px] items-center gap-5 px-7 pb-2.5 pt-3.5">
         <Link
-          href="/store/category"
+          href={categoryHref("침대프레임")}
           className="flex items-center gap-2 text-[19px] font-extrabold text-[var(--ink)]"
         >
           <span className="logo-mark" aria-hidden />
@@ -27,7 +28,7 @@ export function Header({ activeNav = "카테고리" }: { activeNav?: string }) {
           <Link href="/proto/community" className="hover:text-[var(--ink)]">
             집구경
           </Link>
-          <Link href="/store/category" className="text-[var(--blue)]">
+          <Link href={categoryHref("침대프레임")} className="text-[var(--blue)]">
             쇼핑
           </Link>
           <Link href="/proto/interior" className="hover:text-[var(--ink)]">

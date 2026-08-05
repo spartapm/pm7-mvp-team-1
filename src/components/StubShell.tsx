@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
+import { categoryHref } from "@/lib/categories";
 import type { StubPage } from "@/lib/stubs";
 
 export function StubShell({
@@ -38,7 +39,7 @@ export function StubShell({
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
-              href="/store/category?sub=%EC%B9%A8%EB%8C%80%ED%94%84%EB%A0%88%EC%9E%84"
+              href={categoryHref("침대프레임")}
               className="rounded-lg bg-[var(--blue)] px-4 py-2.5 text-[13.5px] font-extrabold text-white"
             >
               카테고리로 가기

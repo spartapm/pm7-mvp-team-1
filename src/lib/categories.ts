@@ -70,3 +70,24 @@ export function getSubCategory(id: SubCategoryId) {
 export function getMajorLabel(majorId: string) {
   return CATEGORIES.find((c) => c.id === majorId)?.label ?? majorId;
 }
+
+/** 쿼리용 서브카테고리 인코딩 (+ → %2B) */
+export function categoryHref(subId: SubCategoryId | string) {
+  return `/store/category?sub=${encodeURIComponent(subId)}`;
+}
+
+/** searchParams.sub 정규화 (+가 공백으로 온 경우 복구) */
+export function parseSubParam(raw: string | undefined): SubCategoryId {
+  const valid = new Set(
+    CATEGORIES.flatMap((m) => m.children.map((c) => c.id as string))
+  );
+  if (raw && valid.has(raw)) return raw as SubCategoryId;
+
+  // application/x-www-form-urlencoded 관례로 + → 공백 디코딩된 경우
+  if (raw) {
+    const plusRestored = raw.replace(/ /g, "+");
+    if (valid.has(plusRestored)) return plusRestored as SubCategoryId;
+  }
+
+  return DEFAULT_SUB_CATEGORY;
+}

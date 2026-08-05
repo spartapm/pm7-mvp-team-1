@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
+import { categoryHref } from "@/lib/categories";
 
 export default function Home() {
-  redirect(
-    `/store/category?sub=${encodeURIComponent("침대프레임")}`
-  );
+  redirect(categoryHref("침대프레임"));
 }
