@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { CategorySidebar } from "@/components/plp/CategorySidebar";
-import { ProductCard } from "@/components/plp/ProductCard";
+import { ProductGrid } from "@/components/plp/ProductGrid";
 import {
   CATEGORIES,
   DEFAULT_SUB_CATEGORY,
@@ -55,25 +55,7 @@ export default function CategoryPage({ searchParams }: PageProps) {
               ))}
             </div>
 
-            <div className="mb-4 flex items-center justify-between">
-              <h1 className="text-xl font-extrabold">{cat?.sub.label}</h1>
-              <button
-                type="button"
-                className="cursor-default rounded-lg border border-[var(--line-2)] px-3 py-1.5 text-[12.5px] text-[var(--ink-faint)]"
-                disabled
-              >
-                인기순 ▾
-              </button>
-            </div>
-            <p className="mb-4 text-[12.5px] text-[var(--ink-faint)]">
-              상품 {products.length}개 · MVP 고정 목록
-            </p>
-
-            <div className="grid grid-cols-2 gap-[18px] md:grid-cols-3 lg:grid-cols-4">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <ProductGrid products={products} title={cat?.sub.label} />
           </main>
         </div>
       </div>

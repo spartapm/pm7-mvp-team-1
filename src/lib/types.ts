@@ -13,6 +13,17 @@ export const INFO_TAG_KEYS: InfoTagKey[] = [
   "배송·설치비용",
 ];
 
+/** data.json imageInfoTags 영문 키 → UI 라벨 */
+export const TAG_KEY_MAP = {
+  color: "색상",
+  size: "크기",
+  mainMaterial: "주요 소재",
+  components: "구성품",
+  deliveryInstallCost: "배송·설치비용",
+} as const;
+
+export type RawTagKey = keyof typeof TAG_KEY_MAP;
+
 export type InfoLocation = {
   title: string;
   file: string;
@@ -20,6 +31,7 @@ export type InfoLocation = {
 };
 
 export type ImageInfoTag = {
+  label: string;
   locationCount: number;
   locations: InfoLocation[];
 };
@@ -27,32 +39,32 @@ export type ImageInfoTag = {
 export type ProductInfoDisclosureItem = {
   itemName: string;
   value: string | null;
-  source?: "image" | "seller";
+  source?: "image" | "page" | "none";
   originalText?: string;
 };
 
-export type MajorCategoryId = "bed" | "mattress";
 export type SubCategoryId =
-  | "bed-frame"
-  | "bed-mattress"
-  | "bed-accessory"
-  | "mattress"
-  | "topper";
+  | "침대프레임"
+  | "침대+매트리스"
+  | "침대부속가구"
+  | "매트리스"
+  | "토퍼";
 
 export type Product = {
   id: string;
   brand: string;
   name: string;
   price: number;
-  majorCategory: MajorCategoryId;
+  originalPrice?: number;
+  discountPercent?: number;
+  majorCategory: string;
   subCategory: SubCategoryId;
+  pageUrl?: string;
   rating: number;
   reviewCount: number;
   inquiryCount: number;
-  colors: string[];
-  sizes: string[];
-  thumbnailLabel: string;
-  detailImages: { file: string; label: string; height: number }[];
+  thumbnailUrl: string;
+  detailImages: { file: string; src: string }[];
   imageInfoTags: Record<InfoTagKey, ImageInfoTag>;
   productInfoDisclosure: ProductInfoDisclosureItem[];
 };

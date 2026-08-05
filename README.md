@@ -32,5 +32,10 @@ npm run dev
 
 ## 데이터
 
-현재는 명세서 JSON 스키마(`imageInfoTags`, `productInfoDisclosure`)에 맞춘 **mock 데이터 25개**를 사용합니다.  
-실제 데이터셋(Drive)을 `public/products/` 등에 넣으면 같은 스키마로 교체할 수 있습니다.
+상품 데이터는 1조 데이터셋 JSON을 사용합니다.
+
+- 소스: https://raw.githubusercontent.com/n3v4k/ohouse-ai-advance-onepick/refs/heads/main/data.json
+- 로컬 복사본: `src/data/data.json`
+- 이미지: GitHub raw URL (`representativeImage`, `detailImages`)
+- 호버 메뉴: `imageInfoTags` (basename + yRatio)
+- 상품정보고시: `productInfoDisclosure` (`source: image` → AI 추출 배지)

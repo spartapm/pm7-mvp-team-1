@@ -1,13 +1,28 @@
-import type { MajorCategoryId, SubCategoryId } from "./types";
+import raw from "@/data/data.json";
+import type { SubCategoryId } from "./types";
+
+type RawSub = {
+  id: string;
+  name: string;
+  productIds: string[];
+};
+
+type RawMajor = {
+  id: string;
+  main: string;
+  subs: RawSub[];
+};
 
 export type SubCategory = {
   id: SubCategoryId;
   label: string;
-  majorId: MajorCategoryId;
+  majorId: string;
+  majorLabel: string;
+  productIds: string[];
 };
 
 export type MajorCategory = {
-  id: MajorCategoryId;
+  id: string;
   label: string;
   enabled: boolean;
   children: SubCategory[];
@@ -24,29 +39,25 @@ export const SIDEBAR_DISABLED = [
   "유아동가구",
 ] as const;
 
-export const CATEGORIES: MajorCategory[] = [
-  {
-    id: "bed",
-    label: "침대",
-    enabled: true,
-    children: [
-      { id: "bed-frame", label: "침대프레임", majorId: "bed" },
-      { id: "bed-mattress", label: "침대+매트리스", majorId: "bed" },
-      { id: "bed-accessory", label: "침대부속가구", majorId: "bed" },
-    ],
-  },
-  {
-    id: "mattress",
-    label: "매트리스·토퍼",
-    enabled: true,
-    children: [
-      { id: "mattress", label: "매트리스", majorId: "mattress" },
-      { id: "topper", label: "토퍼", majorId: "mattress" },
-    ],
-  },
-];
+export const CATEGORIES: MajorCategory[] = (
+  raw.categories as RawMajor[]
+).map((major) => ({
+  id: major.id,
+  label: major.main,
+  enabled: true,
+  children: major.subs.map((sub) => ({
+    id: sub.id as SubCategoryId,
+    label: sub.name,
+    majorId: major.id,
+    majorLabel: major.main,
+    productIds: sub.productIds,
+  })),
+}));
 
-export const DEFAULT_SUB_CATEGORY: SubCategoryId = "bed-frame";
+export const DEFAULT_SUB_CATEGORY: SubCategoryId =
+  ((raw as { defaultMain?: string }).defaultMain === "침대"
+    ? "침대프레임"
+    : CATEGORIES[0]?.children[0]?.id) ?? "침대프레임";
 
 export function getSubCategory(id: SubCategoryId) {
   for (const major of CATEGORIES) {
@@ -56,6 +67,6 @@ export function getSubCategory(id: SubCategoryId) {
   return null;
 }
 
-export function getMajorLabel(id: MajorCategoryId) {
-  return CATEGORIES.find((c) => c.id === id)?.label ?? "";
+export function getMajorLabel(majorId: string) {
+  return CATEGORIES.find((c) => c.id === majorId)?.label ?? majorId;
 }

@@ -9,6 +9,8 @@ const HOVER_HEIGHT = 48;
 const SCROLL_GAP = 14;
 const CLOSE_DELAY_MS = 300;
 
+type TabId = "desc" | "detail" | "review" | "inquiry" | "shipping" | "recommend";
+
 type StickyTabBarProps = {
   product: Product;
   onScrollFail: () => void;
@@ -16,11 +18,10 @@ type StickyTabBarProps = {
 
 export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
   const [hoverOpen, setHoverOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"desc" | "detail" | "other">("desc");
+  const [activeTab, setActiveTab] = useState<TabId>("desc");
   const [expandedKey, setExpandedKey] = useState<InfoTagKey | null>(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const zoneRef = useRef<HTMLDivElement>(null);
 
   const clearCloseTimer = () => {
     if (closeTimer.current) {
@@ -41,7 +42,7 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
       setHoverOpen(false);
       setExpandedKey(null);
       setTooltipOpen(false);
-      setActiveTab("desc");
+      setActiveTab((prev) => (prev === "detail" ? "desc" : prev));
     }, CLOSE_DELAY_MS);
   };
 
@@ -54,12 +55,12 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
 
   useEffect(() => () => clearCloseTimer(), []);
 
-  const scrollWithOffset = (el: HTMLElement | null) => {
+  const scrollWithOffset = (el: HTMLElement | null, withHover = false) => {
     if (!el) {
       onScrollFail();
       return;
     }
-    const offset = TAB_HEIGHT + HOVER_HEIGHT + SCROLL_GAP;
+    const offset = TAB_HEIGHT + (withHover || hoverOpen ? HOVER_HEIGHT : 0) + SCROLL_GAP;
     const y = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top: y, behavior: "auto" });
     el.classList.remove("flash-target");
@@ -69,7 +70,13 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
 
   const scrollToNotice = () => {
     openHover();
-    scrollWithOffset(document.getElementById("sec-notice"));
+    scrollWithOffset(document.getElementById("sec-notice"), true);
+  };
+
+  const scrollToSection = (id: string, tab: TabId) => {
+    closeNow();
+    setActiveTab(tab);
+    scrollWithOffset(document.getElementById(id), false);
   };
 
   const scrollToLocation = (file: string, yRatio: number) => {
@@ -102,47 +109,47 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
     setExpandedKey((prev) => (prev === key ? null : key));
   };
 
-  const tabs = [
-    { id: "desc" as const, label: "상품 설명", enabled: true },
-    { id: "detail" as const, label: "상세정보", enabled: true, isNew: true },
+  const tabs: {
+    id: TabId;
+    label: string;
+    num?: string;
+    sectionId?: string;
+  }[] = [
+    { id: "desc", label: "상품 설명", sectionId: "sec-desc" },
+    { id: "detail", label: "상세정보" },
     {
-      id: "review" as const,
+      id: "review",
       label: "리뷰",
       num: product.reviewCount.toLocaleString("ko-KR"),
-      enabled: false,
+      sectionId: "sec-review",
     },
     {
-      id: "inquiry" as const,
+      id: "inquiry",
       label: "문의",
       num: product.inquiryCount.toLocaleString("ko-KR"),
-      enabled: false,
+      sectionId: "sec-inquiry",
     },
-    { id: "shipping" as const, label: "배송·환불", enabled: false },
-    { id: "recommend" as const, label: "추천", enabled: false },
+    { id: "shipping", label: "배송·환불", sectionId: "sec-shipping" },
+    { id: "recommend", label: "추천", sectionId: "sec-recommend" },
   ];
 
   return (
-    <div ref={zoneRef} className="sticky top-0 z-[600] bg-white shadow-[0_1px_0_var(--line)]">
+    <div className="sticky top-0 z-[600] bg-white shadow-[0_1px_0_var(--line)]">
       <div className="relative mx-auto flex h-[52px] max-w-[1256px] items-stretch px-7">
         {tabs.map((tab) => {
           const isDetail = tab.id === "detail";
-          const isDesc = tab.id === "desc";
-          const active =
-            (isDetail && activeTab === "detail") ||
-            (isDesc && activeTab === "desc" && !hoverOpen);
+          const active = activeTab === tab.id;
 
           return (
             <button
               key={tab.id}
               type="button"
               className={`relative flex items-center gap-1.5 whitespace-nowrap border-b-2 px-[18px] text-[14.5px] ${
-                !tab.enabled
-                  ? "cursor-default text-[var(--ink-faint)] border-transparent"
-                  : active
-                    ? "border-[var(--blue)] font-extrabold text-[var(--blue)]"
-                    : isDetail
-                      ? "border-transparent font-bold text-[var(--ink)]"
-                      : "border-transparent text-[var(--ink-soft)]"
+                active
+                  ? "border-[var(--blue)] font-extrabold text-[var(--blue)]"
+                  : isDetail
+                    ? "border-transparent font-bold text-[var(--ink)]"
+                    : "border-transparent text-[var(--ink-soft)]"
               }`}
               onMouseEnter={() => {
                 if (isDetail) openHover();
@@ -155,16 +162,19 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
                   scrollToNotice();
                   return;
                 }
-                if (!tab.enabled) return;
-                closeNow();
-                setActiveTab("desc");
-                if (isDesc) {
-                  window.scrollTo({ top: 0, behavior: "auto" });
+                if (tab.id === "desc") {
+                  closeNow();
+                  setActiveTab("desc");
+                  scrollWithOffset(document.getElementById("sec-desc"), false);
+                  return;
+                }
+                if (tab.sectionId) {
+                  scrollToSection(tab.sectionId, tab.id);
                 }
               }}
             >
               {tab.label}
-              {"num" in tab && tab.num ? (
+              {tab.num ? (
                 <span className="text-xs text-[var(--ink-faint)]">{tab.num}</span>
               ) : null}
               {isDetail ? (
@@ -177,7 +187,6 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
         })}
       </div>
 
-      {/* transparent bridge so mouseleave doesn't fire between tab and menu */}
       <div
         className={`absolute left-0 right-0 top-[52px] z-[601] ${
           hoverOpen ? "pointer-events-auto" : "pointer-events-none"
@@ -187,7 +196,9 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
       >
         <div
           className={`mx-auto flex h-12 max-w-[1256px] items-center gap-2 border-b border-[var(--blue-line)] bg-[var(--blue-soft)] px-7 transition-opacity ${
-            hoverOpen ? "opacity-100" : "pointer-events-none h-0 overflow-hidden opacity-0 border-0"
+            hoverOpen
+              ? "opacity-100"
+              : "pointer-events-none h-0 overflow-hidden opacity-0 border-0"
           }`}
           style={hoverOpen ? undefined : { height: 0 }}
         >
@@ -241,7 +252,9 @@ export function StickyTabBar({ product, onScrollFail }: StickyTabBarProps) {
                       </span>
                     ) : null}
                     {multi ? (
-                      <span className={`text-[9px] ${expanded ? "text-white" : "text-[var(--blue-strong)]"}`}>
+                      <span
+                        className={`text-[9px] ${expanded ? "text-white" : "text-[var(--blue-strong)]"}`}
+                      >
                         ▾
                       </span>
                     ) : null}

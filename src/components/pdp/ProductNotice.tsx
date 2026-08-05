@@ -6,6 +6,10 @@ function NoticeRow({ item }: { item: ProductInfoDisclosureItem }) {
     item.value === null || item.value === undefined || item.value === ""
       ? "해당사항없음"
       : item.value;
+  const showOriginal =
+    isAi &&
+    item.originalText &&
+    item.originalText !== item.value;
 
   return (
     <div className="grid grid-cols-[180px_1fr] border-t border-[var(--line)] text-[12.5px] first:border-t-0">
@@ -19,7 +23,7 @@ function NoticeRow({ item }: { item: ProductInfoDisclosureItem }) {
       </div>
       <div className="px-3.5 py-3">
         <span>{displayValue}</span>
-        {isAi && item.originalText ? (
+        {showOriginal ? (
           <span className="mt-1 block text-[11px] text-[var(--ink-faint)]">
             셀러 원본: {item.originalText}
           </span>
